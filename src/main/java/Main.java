@@ -1,6 +1,4 @@
-import model.Inscriere;
 import model.Participant;
-import model.Proba;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import repository.InscriereDbRepository;
@@ -15,7 +13,7 @@ import java.util.Properties;
 public class Main {
 
     public static void main(String[] args) {
-        ApplicationContext context=new ClassPathXmlApplicationContext("TasksApp.xml");
+        ApplicationContext context=new ClassPathXmlApplicationContext("SwimApp.xml");
         System.out.println("boss");
         Participant p = new Participant(1,"abc",23);
         System.out.println(p.getNume());
