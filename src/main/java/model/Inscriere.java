@@ -2,10 +2,10 @@ package model;
 
 public class Inscriere {
     int idInscriere;
-    String idParticipant;
-    String idProba;
+    int idParticipant;
+    int  idProba;
 
-    public Inscriere(int idInscriere, String idParticipant, String idProba) {
+    public Inscriere(int idInscriere, int idParticipant, int idProba) {
         this.idInscriere = idInscriere;
         this.idParticipant = idParticipant;
         this.idProba = idProba;
@@ -19,19 +19,19 @@ public class Inscriere {
         this.idInscriere = idInscriere;
     }
 
-    public String getIdParticipant() {
+    public int getIdParticipant() {
         return idParticipant;
     }
 
-    public void setIdParticipant(String idParticipant) {
+    public void setIdParticipant(int idParticipant) {
         this.idParticipant = idParticipant;
     }
 
-    public String getIdProba() {
+    public int getIdProba() {
         return idProba;
     }
 
-    public void setIdProba(String idProba) {
+    public void setIdProba(int idProba) {
         this.idProba = idProba;
     }
 }

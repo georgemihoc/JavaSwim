@@ -44,4 +44,9 @@ public class Proba {
     public void setNrParticipanti(int nrParticipanti) {
         this.nrParticipanti = nrParticipanti;
     }
+
+    @Override
+    public String toString() {
+        return lungime + "m"+ " | " + stil + " | "  + nrParticipanti + " participanti";
+    }
 }

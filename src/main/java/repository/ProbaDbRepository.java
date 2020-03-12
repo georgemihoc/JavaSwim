@@ -72,8 +72,20 @@ public class ProbaDbRepository implements IRepository<Integer, Proba> {
 
     @Override
     public void update(Integer integer, Proba entity) {
-        //To do
-    }
+        logger.traceEntry("updating element with {}",integer);
+        Connection con=dbUtils.getConnection();
+        try(PreparedStatement preStmt=con.prepareStatement("update Proba set idProba = ? , lungime = ?, stil = ?,nrParticipanti=? where idProba=?")){
+            preStmt.setInt(1,integer);
+            preStmt.setInt(2,entity.getLungime());
+            preStmt.setString(3,entity.getStil());
+            preStmt.setInt(4,entity.getNrParticipanti());
+            preStmt.setInt(5,integer);
+            int result=preStmt.executeUpdate();
+        }catch (SQLException ex){
+            logger.error(ex);
+            System.out.println("Error DB "+ex);
+        }
+        logger.traceExit();    }
 
     @Override
     public Proba findOne(Integer integer) {

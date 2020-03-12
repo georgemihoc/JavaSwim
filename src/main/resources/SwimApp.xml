@@ -22,9 +22,15 @@
     <bean id="repoInscriere" class="repository.InscriereDbRepository">
         <constructor-arg ref="jdbcProps"/>
     </bean>
+    <bean id="repoOrganizator" class="repository.OrganizatorDbRepository">
+        <constructor-arg ref="jdbcProps"/>
+    </bean>
 
-    <bean id="taskService" class="service.ServiceParticipant">
+    <bean id="taskService" class="service.Service">
         <constructor-arg ref="repoParticipant"/>
+        <constructor-arg ref="repoProba"/>
+        <constructor-arg ref="repoInscriere"/>
+        <constructor-arg ref="repoOrganizator"/>
     </bean>
 
 <!--    <bean id="repo2" class="tasks.repository.SortingTaskInMemoryRepository">-->

@@ -25,4 +25,7 @@ dependencies {
 
     compile 'org.springframework:spring-context:5.0.4.RELEASE'
 
+    // https://mvnrepository.com/artifact/org.controlsfx/controlsfx
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '11.0.1'
+
 }
