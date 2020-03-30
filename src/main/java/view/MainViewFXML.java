@@ -1,21 +1,33 @@
 package view;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import model.Inscriere;
+import model.Organizator;
 import model.Participant;
 import model.Proba;
+import service.Event;
+import service.IObserver;
+import service.Observer;
 import service.Service;
 
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Vector;
 
 
-public class MainViewFXML implements Initializable {
+public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
+    private ClientController ctrl;
+
     public ListView listInscriere;
     public TextField textfieldNume;
     public TextField textFieldVarsta;
@@ -38,9 +50,18 @@ public class MainViewFXML implements Initializable {
     @FXML private TextField taskIdText,descBox, nrElem;
     @FXML private TextArea execMessages;
 
+    private JList listprobe;
+
+    private static Vector allInstances = new Vector();
+
+
     public MainViewFXML() {
+            allInstances.add(this);
 
-
+    }
+    public static synchronized Vector getAllInstances()
+    {
+        return (Vector) (allInstances.clone());
     }
 
     @Override
@@ -60,6 +81,16 @@ public class MainViewFXML implements Initializable {
 //        initData();
         list.getSelectionModel().selectedItemProperty().addListener(
                 (observable,oldvalue,newValue)->showInscrisi(newValue) );
+//        listprobe=new JList(ctrl.getProbeListModel());
+//        listprobe.addListSelectionListener(new ListSelectionListener() {
+//
+//            @Override
+//            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+//                listprobe=new JList(ctrl.getProbeListModel());
+//
+//                initData();
+//            }
+//        });
 
     }
 
@@ -77,7 +108,6 @@ public class MainViewFXML implements Initializable {
                             lista+= ", ";
                         lista += p.getLungime()+ "m "+ p.getStil()+ " ";
                 }
-//                lista = lista.substring(lista.length());
                 listInscrisi.getItems().add(participant.getNume() + " | " + participant.getVarsta()  + " | Probe: " + lista);
             }
 
@@ -85,24 +115,31 @@ public class MainViewFXML implements Initializable {
         }
     }
     private Service service;
-    public void setTasksService(Service service){
+    public void setTasksService(Service service , ClientController ctrl){
         this.service=service;
-//        service.addObserver(this);
+        this.ctrl = ctrl;
+
+        service.addObserver(this);
 //        service.addRunnerObserver(new RunnerObserver());
         initData();
         mainPane.setVisible(false);
     }
 
-    private void initData() {
+    public void initData() {
         list.getItems().clear();
         listInscriere.getItems().clear();
         listInscriere.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listInscrisi.getItems().clear();
 
+//        list.getItems().setAll()
         for(Proba proba : service.findAllProba()){
             list.getItems().add(proba);
             listInscriere.getItems().add(proba.getLungime()+"m " + proba.getStil());
         }
+//        for(Proba proba: ctrl.getProbeListModel()){
+//            list.getItems().add(proba);
+//        }
+//        list.getItems().setAll(ctrl.getProbeListModel());
 
         System.out.println(listInscriere.getSelectionModel().getSelectedItems());
 
@@ -113,7 +150,8 @@ public class MainViewFXML implements Initializable {
 //        }
     }
 
-    public void handleAddButton(ActionEvent actionEvent) {
+
+    public void handleAddButton(ActionEvent actionEvent) throws Exception {
         String nume = textfieldNume.getText();
         int varsta = Integer.parseInt(textFieldVarsta.getText());
         service.addParticipant(nume,varsta);
@@ -121,6 +159,8 @@ public class MainViewFXML implements Initializable {
         for (Object index:indexes
              ) {
             service.addInscriere(nume,varsta,(int)index+1);
+//            wait(5);
+            ctrl.participantInscris(service.findInscriere(service.findParticipant(nume,varsta).getIdParticipant(),(int) index + 1));
         }
         clearFields();
     }
@@ -133,7 +173,7 @@ public class MainViewFXML implements Initializable {
         initData();
     }
 
-    public void handleLoginButton(ActionEvent actionEvent) {
+    public void handleLoginButton(ActionEvent actionEvent) throws Exception {
         String username = textfieldUsername.getText();
         String password = passwordField.getText();
         if( service.validateLogin(username,password))
@@ -142,6 +182,7 @@ public class MainViewFXML implements Initializable {
             passwordField.clear();
             loginPane.setVisible(false);
             mainPane.setVisible(true);
+            ctrl.login(username,password);
         }
         else {
             showErrorMessage("Invalid credentials");
@@ -158,249 +199,55 @@ public class MainViewFXML implements Initializable {
         loginPane.setVisible(true);
     }
 
-//    @FXML
-//    private void addButton(ActionEvent ec) {
-//        String id=taskIdText.getText();
-//        String desc=descBox.getText();
-//        SortingOrder orderV=(SortingOrder)orderGroup.getSelectedToggle().getUserData();
-//        SortingAlgorithm algo=alg.getSelectionModel().getSelectedItem();
-//        try{
-//            int idVal=Integer.parseInt(id);
-//            int nrElemVal=Integer.parseInt(nrElem.getText());
-//            addSortingTask(idVal,desc,orderV,algo,nrElemVal);
-//            clearFields();
-//
-//        }catch(NumberFormatException ex){
-//            showErrorMessage( "Id-ul si nr elem trebuie sa fie numere intregi! " + ex.getMessage());
-//        }catch (RepositoryException ex){
-//            showErrorMessage("Eroare la adaugare: " + ex.getMessage());
-//        }
-//    }
-//
-//    public void addSortingTask(int id, String desc, SortingOrder order, SortingAlgorithm alg, int nrElem){
-//        SortingTask task=new SortingTask(id,desc,alg,order,nrElem);
-//        service.addSortingTask(task);
-//
-//    }
-
-//    @FXML private void deleteButton(ActionEvent ev){
-//        int index=table.getSelectionModel().getSelectedIndex();
-//        if (index<0) {
-//            showErrorMessage("Eroare la stergere: trebuie sa selectati un task");
-//            return;
-//        }
-//        SortingTask task=table.getSelectionModel().getSelectedItem();
-//        deleteTask(task);
-//    }
-//    public void deleteTask(SortingTask task){
-//        service.deleteSortingTask(task);
-//    }
-//
-//    @Override
-//    public void update(SortingTaskEvent sortingTaskEvent) {
-//        switch (sortingTaskEvent.getType()){
-//            case ADD:{ table.getItems().add(sortingTaskEvent.getData()); break;}
-//            case DELETE:{table.getItems().remove(sortingTaskEvent.getData()); break;}
-//            case UPDATE:{ table.getItems().remove(sortingTaskEvent.getOldData());
-//                table.getItems().add(sortingTaskEvent.getData()); break;}
-//        }
-//    }
-//
-//    @FXML public void updateButton(ActionEvent ev){
-//        int index=table.getSelectionModel().getSelectedIndex();
-//        if (index<0){
-//            showErrorMessage("Trebuie sa selectati un task!!!");
-//            return;
-//        }
-//        SortingTask oldTask=table.getSelectionModel().getSelectedItem();
-//        String id=taskIdText.getText();
-//        String desc=descBox.getText();
-//        SortingOrder orderV=(SortingOrder)orderGroup.getSelectedToggle().getUserData();
-//        SortingAlgorithm algo=alg.getSelectionModel().getSelectedItem();
-//        try{
-//            int idVal=Integer.parseInt(id);
-//            int nrElemVal=Integer.parseInt(nrElem.getText());
-//            updateTask(oldTask, idVal, desc, orderV, algo, nrElemVal);
-//
-//        }catch(NumberFormatException ex){
-//            showErrorMessage( "Id-ul si nr elem trebuie sa fie numere intregi! " + ex.getMessage());
-//        }catch (RepositoryException ex){
-//            showErrorMessage("Eroare la adaugare: " + ex.getMessage());
-//        }
-//    }
-//    public void updateTask(SortingTask oldTask, int idVal, String desc, SortingOrder orderV, SortingAlgorithm algo, int nrElemVal) {
-//        SortingTask newTask=new SortingTask(idVal,desc,algo,orderV,nrElemVal);
-//        service.updateSortingTask(oldTask,newTask);
-//    }
-//
     void showErrorMessage(String text){
         Alert message=new Alert(Alert.AlertType.ERROR);
         message.setTitle("Mesaj eroare");
         message.setContentText(text);
         message.showAndWait();
     }
-//
-//    @FXML public void cancelButton(ActionEvent e){
-//        table.getSelectionModel().clearSelection();
-//        clearFields();
-//    }
-//    private void clearFields(){
-//        taskIdText.setText("");
-//        descBox.setText("");
-//        nrElem.setText("");
-//        asc.setSelected(true);
-//        alg.getSelectionModel().selectFirst();
-//        exeTask.setDisable(true);
-//
-//        //cancelExec.setDisable(true);
-//    }
-//
-//    private class RunnerObserver implements Observer<TaskEvent> {
-//
-//        @Override
-//        public void update(TaskEvent taskEvent) {
-//            switch (taskEvent.getType()){
-//                case StartingTaskExecution:{appendMessage("Starting execution of :"+taskEvent.getTask()); break;}
-//                case TaskExecutionCompleted:{appendMessage("Completed execution of "+taskEvent.getTask()); break;}
-//            }
-//        }
-//    }
-//    @FXML void  handleAddTaskRunner(ActionEvent e){
-//        TextInputDialog inputControl=new TextInputDialog();
-//        inputControl.setContentText("Introduceti un task id:");
-//        inputControl.setTitle("Add task to Runner");
-//        inputControl.setHeaderText("");
-//        Optional<String> result=inputControl.showAndWait();
-//        if (result.isPresent()){
-//            try{
-//                int idV=Integer.parseInt(result.get());
-//                service.addTaskToRunner(idV);
-//                appendMessage("Task-ul cu  "+idV+" adaugat la TaskRunner");
-//            }catch (NumberFormatException ex){
-//                showErrorMessage("Trebuie sa introduceti un id valid"+ex.getMessage());
-//            }catch (RepositoryException ex){
-//                showErrorMessage(ex.getMessage());
-//            }
-//        }
-//    }
-//
-//    @FXML void  handleExecuteOne(ActionEvent e){
-//        service.executeOneTask();
-//    }
-//
-//    private Task<Void> executeAllTask;
-//    @FXML void handleExecuteALL(ActionEvent e){
-//        executeAllTask=new Task<Void>(){
-//            @Override public Void call(){
-//                service.executeAll();
-//                return null;
-//            }
-//
-//            @Override
-//            protected void cancelled() {
-//                super.cancelled();
-//                service.cancelRunner();
-//            }
-//        };
-//        // service.executeAll();
-//        Thread th=new Thread(executeAllTask);
-//        th.setDaemon(true);
-//        th.start();
-//    }
-//    private void appendMessage(String text){
-//        // execMessages.appendText(text+"\n");
-//        Platform.runLater(new Runnable() {
-//            @Override public void run() {
-//                execMessages.appendText(text+"\n");
-//            }
-//        });
-//
-//    }
-//
-//    @FXML Button exeTask;
-//    @FXML Button cancelExec;
-//
-//    private Task<Void> runningTask;
-//    @FXML void execButton(ActionEvent e){
-//        int index=table.getSelectionModel().getSelectedIndex();
-//        if (index<0){
-//            showErrorMessage("Trebuie sa selectati un task!!!");
-//            return;
-//        }
-//        SortingTask oldTask=table.getSelectionModel().getSelectedItem();
-//        //oldTask.execute();
-//
-//        runningTask = new Task<Void>() {
-//            @Override public Void call() {
-//
-//                try{
-//                    oldTask.execute();
-//                    updateMessage("Done");
-//                    updateProgress(1,1);
-//                }catch(TaskExecutionException ex){
-//                    System.out.println("Execution task cancelled");
-//                    updateMessage("Cancelled");
-//
-//
-//                    updateProgress(0,1);
-//                    System.out.println("Cancelled before unbind ");
-//                    // progress.progressProperty().unbind();
-//
-//                    // progress.progressProperty().unbind();
-//                    if (table.getSelectionModel().getSelectedIndex()>=0)
-//                        exeTask.setDisable(false);
-//                    cancelExec.setDisable(true);
+
+    @Override
+    public void update(Event event) {
+//        initData();
+    }
+
+    @Override
+    public void participantInscris(Inscriere inscriere) throws Exception {
+//        initData();
+    }
+
+    @Override
+    public void addParticipant(Inscriere inscriere) throws Exception {
+
+    }
+
+    @Override
+    public void loggedIn(Organizator user) {
+//        initData();
+    }
+
+    @Override
+    public void refresh(Inscriere inscriere)
+    {
+        Platform.runLater(new Runnable() {
+            public void run() {
+//                for(Proba proba : service.findAllProba()){
+//                    list.getItems().add(proba);
 //                }
-//                return null;
-//            }
-//
-//            @Override protected void succeeded() {
-//                super.succeeded();
-//                updateMessage("Done!");
-//                progress.progressProperty().unbind();
-//                if (table.getSelectionModel().getSelectedIndex()>=0)
-//                    exeTask.setDisable(false);
-//                cancelExec.setDisable(true);
-//            }
-//
-//
-//        };
-//        // progress = new ProgressBar();
-//        progress.progressProperty().bind(runningTask.progressProperty());
-//        execLabel.textProperty().bind(runningTask.messageProperty());
-//
-//
-//        cancelExec.setDisable(false);
-//        exeTask.setDisable(true);
-//
-//        Thread th=new Thread(runningTask);
-//        th.setDaemon(true);
-//        th.start();
-//    }
-//
-//    @FXML void cancelExecButton(ActionEvent e){
-//        runningTask.cancel();
-//        if (table.getSelectionModel().getSelectedIndex()>=0)
-//            exeTask.setDisable(false);
-//        cancelExec.setDisable(true);
-//
-//    }
-//
-//    @FXML ProgressBar progress;
-//    @FXML Label execLabel;
-//
-//    public void close(){
-//        System.out.println("Ctrl closing");
-//        if((runningTask!=null)&&(runningTask.isRunning()))
-//        {
-//            System.out.println("Task still running ...");
-//            runningTask.cancel();
-//
-//        }
-//        if ((executeAllTask!=null)&&(executeAllTask.isRunning())) {
-//            System.out.println("Execute all still running ..");
-//            executeAllTask.cancel();
-//            // service.close();
-//        }
-//    }
+//                list.getItems().remove(inscriere.getIdProba()-1);
+                Proba p =service.findProba(inscriere.getIdProba());
+                list.getItems().remove(p.getIdProba()-1);
+                list.getItems().add(p.getIdProba()-1,p);
+            }
+        });
+    }
+
+    private class RunnerObserver implements Observer<Event> {
+        @Override
+        public void update(Event event) {
+            initData();
+        }
+
+    }
+
 }

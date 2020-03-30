@@ -9,7 +9,7 @@ import repository.IRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Service {
+public class Service  implements Observable<Event>{
     private IRepository<Integer, Participant> repoParticipant;
     private IRepository<Integer, Proba> repoProba;
     private IRepository<Integer, Inscriere> repoInscriere;
@@ -42,10 +42,34 @@ public class Service {
             return null;
         }
     }
+    private List<Observer<Event>> observers=new ArrayList<>();
+    @Override
+    public void addObserver(Observer<Event> e) {
+        observers.add(e);
+    }
+
+    @Override
+    public void removeObserver(Observer<Event> e) {
+        observers.remove(e);
+    }
+
+    @Override
+    public void notifyObservers(Event t) {
+        observers.stream().forEach(x->x.update(t));
+    }
+
     public Participant findParticipant(String nume, int varsta){
         for (Participant p:
                 repoParticipant.findAll()) {
             if(p.getNume().equals(nume) && p.getVarsta() == varsta)
+                return p;
+        }
+        return null;
+    }
+    public Proba findProba(int idPRoba){
+        for (Proba p:
+                repoProba.findAll()) {
+            if(p.getIdProba()==idPRoba)
                 return p;
         }
         return null;
@@ -63,14 +87,23 @@ public class Service {
                 repoProba.update(idProba,new Proba(idProba,proba.getLungime(),proba.getStil(),proba.getNrParticipanti()+1));
             }
         }
+        notifyObservers(null);
         return inscriere;
     }
 
-    private Inscriere findInscriere(int idParticipant, int idProba) {
+    public Inscriere findInscriere(int idParticipant, int idProba) {
         for (Inscriere inscriere :
                 repoInscriere.findAll()) {
             if(inscriere.getIdParticipant() == idParticipant && inscriere.getIdProba() == idProba)
                 return inscriere;
+        }
+        return null;
+    }
+    public Organizator findOrganizator(String username, String password) {
+        for (Organizator organizator :
+                repoOrganizator.findAll()) {
+            if(organizator.getUsername().equals(username) && organizator.getPassword().equals(password))
+                return organizator;
         }
         return null;
     }

@@ -1,3 +1,4 @@
+import client.StartRpcClient;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -9,7 +10,10 @@ import javafx.stage.WindowEvent;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import service.Service;
+import view.ClientController;
 import view.MainViewFXML;
+
+import java.util.Iterator;
 
 public class Main extends Application {
     @Override
@@ -19,9 +23,17 @@ public class Main extends Application {
         Pane myPane = (AnchorPane) loader.load();
         MainViewFXML ctrl=loader.getController();
 
+        ClientController clientController = StartRpcClient.main(getParticipantService(),ctrl);
+        System.out.println("BOss");
+
+//        Iterator list = MainViewFXML.getAllInstances().iterator();
+//        while (list.hasNext()){
+//            System.out.println(list.toString());
+//        }
 
 
-        ctrl.setTasksService(getParticipantService());
+        ctrl.setTasksService(getParticipantService(),clientController);
+//        ctrl.setTasksService(getParticipantService());
         Scene myScene = new Scene(myPane);
         primaryStage.setScene(myScene);
 
@@ -33,7 +45,9 @@ public class Main extends Application {
         });
         primaryStage.show();
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+//        StartRpcClient.main();
+        System.out.println("boss");
         launch(args);
     }
 
