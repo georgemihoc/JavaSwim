@@ -90,6 +90,20 @@ public class Service  implements Observable<Event>{
         notifyObservers(null);
         return inscriere;
     }
+//    public Inscriere addInscriere(Inscriere inscriere){
+//        if(findInscriere(inscriere.getIdParticipant(),inscriere.getIdProba())!= null){
+//            return null;
+//        }
+//        repoInscriere.save(inscriere);
+//        for (Proba proba:
+//                repoProba.findAll()) {
+//            if(proba.getIdProba()==inscriere.getIdProba()){
+//                repoProba.update(inscriere.getIdProba(),new Proba(inscriere.getIdProba(),proba.getLungime(),proba.getStil(),proba.getNrParticipanti()+1));
+//            }
+//        }
+//        notifyObservers(null);
+//        return inscriere;
+//    }
 
     public Inscriere findInscriere(int idParticipant, int idProba) {
         for (Inscriere inscriere :
@@ -107,7 +121,9 @@ public class Service  implements Observable<Event>{
         }
         return null;
     }
-
+    public int findNextIdInscriere(){
+        return repoInscriere.size()+1;
+    }
     public Iterable<Participant> findAllInscrisi(int idProba){
         List<Participant> list = new ArrayList<>();
         for (Inscriere inscriere:

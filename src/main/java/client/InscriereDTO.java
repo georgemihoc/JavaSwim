@@ -7,11 +7,31 @@ public class InscriereDTO implements Serializable{
     int idInscriere;
     int idParticipant;
     int idProba;
+    String nume;
+    int varsta;
 
-    public InscriereDTO(int idInscriere, int idParticipant, int idProba) {
+    public InscriereDTO(int idInscriere, int idParticipant, int idProba , String nume, int varsta) {
         this.idInscriere = idInscriere;
         this.idParticipant = idParticipant;
         this.idProba = idProba;
+        this.nume = nume;
+        this.varsta = varsta;
+    }
+
+    public String getNume() {
+        return nume;
+    }
+
+    public void setNume(String nume) {
+        this.nume = nume;
+    }
+
+    public int getVarsta() {
+        return varsta;
+    }
+
+    public void setVarsta(int varsta) {
+        this.varsta = varsta;
     }
 
     public int getIdInscriere() {
@@ -40,6 +60,6 @@ public class InscriereDTO implements Serializable{
 
     @Override
     public String toString() {
-        return idInscriere + " " + idParticipant + " " + idProba;
+        return idInscriere + " " + idParticipant + " " + idProba + " " + nume + " " + varsta;
     }
 }

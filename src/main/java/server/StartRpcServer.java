@@ -50,7 +50,7 @@ public class StartRpcServer {
             System.err.println("Using default port "+defaultPort);
         }
         System.out.println("Starting server on port: "+chatServerPort);
-        AbstractServer server = new ChatRpcConcurrentServer(chatServerPort, serviceImpl);
+        AbstractServer server = new ChatRpcConcurrentServer(chatServerPort, serviceImpl,context.getBean(Service.class));
         try {
             server.start();
             System.out.println("BOSS");

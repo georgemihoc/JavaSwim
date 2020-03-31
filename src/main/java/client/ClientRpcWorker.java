@@ -5,6 +5,7 @@ import model.Inscriere;
 import model.Organizator;
 import service.IObserver;
 import service.IServices;
+import service.Service;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,13 +16,15 @@ import java.net.Socket;
 public class ClientRpcWorker implements Runnable, IObserver {
     private IServices server;
     private Socket connection;
+    private Service service;
 
     private ObjectInputStream input;
     private ObjectOutputStream output;
     private volatile boolean connected;
-    public ClientRpcWorker(IServices server, Socket connection) {
+    public ClientRpcWorker(IServices server, Service service, Socket connection) {
         this.server = server;
         this.connection = connection;
+        this.service = service;
         try{
             output=new ObjectOutputStream(connection.getOutputStream());
             output.flush();
@@ -75,13 +78,17 @@ public class ClientRpcWorker implements Runnable, IObserver {
             }
         }
         if (request.type()== RequestType.ADD_PARTICIPANT){
-            System.out.println("SendMessageRequest ...");
+            System.out.println("Add inscriere request ...");
             InscriereDTO mdto=(InscriereDTO) request.data();
+            String nume = mdto.nume;
+            int varsta = mdto.varsta;
             Inscriere inscriere= DTOUtils.getFromDTO(mdto);
             try {
                 System.out.println("PAS 3");
                 System.out.println(connection);
-                server.addInscriere(inscriere);
+//                service.addDb(inscriere);
+                System.out.println(nume+varsta+inscriere.getIdProba());
+                server.addInscriere(service,nume,varsta,inscriere.getIdProba());
                 return okResponse;
             } catch (Exception e) {
                 return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
@@ -89,7 +96,6 @@ public class ClientRpcWorker implements Runnable, IObserver {
         }
         return response;
     }
-
     private void sendResponse(Response response) throws IOException{
         System.out.println("sending response "+response);
         output.writeObject(response);
@@ -97,11 +103,15 @@ public class ClientRpcWorker implements Runnable, IObserver {
     }
 
     @Override
-    public void participantInscris(Inscriere inscriere) throws Exception {
-        System.out.println("4");
-        InscriereDTO mdto= DTOUtils.getDTO(inscriere);
+    public void participantInscris(Service service,String nume, int varsta ,int idProba) throws Exception {
+        System.out.println("PAS 5");
+        System.out.println(this.service.findNextIdInscriere());
+        System.out.println(this.service.findParticipant(nume,varsta).getIdParticipant());
+        Inscriere i = new Inscriere(this.service.findNextIdInscriere(),this.service.findParticipant(nume,varsta).getIdParticipant(),idProba);
+        InscriereDTO mdto = DTOUtils.getDTO(i,nume,varsta);
+//        InscriereDTO mdto= DTOUtils.getDTO(inscriere);
         Response resp=new Response.Builder().type(ResponseType.PARTICIPANT_ADAUGAT).data(mdto).build();
-        System.out.println("Message received  "+inscriere);
+        System.out.println("Message received  "+mdto);
         try {
             sendResponse(resp);
         } catch (IOException e) {

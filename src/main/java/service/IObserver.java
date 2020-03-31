@@ -7,7 +7,7 @@ import model.Participant;
 
 
 public interface IObserver {
-     void participantInscris(Inscriere inscriere) throws Exception;
+     void participantInscris(Service service,String nume, int varsta, int idProba) throws Exception;
      void addParticipant(Inscriere inscriere) throws Exception;
 
      void loggedIn(Organizator user);

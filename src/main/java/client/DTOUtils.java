@@ -14,7 +14,7 @@ public class DTOUtils {
     public static UserDTO getDTO(Organizator user){
         String id=user.getUsername();
         String pass=user.getPassword();
-        return new UserDTO(id, pass);
+        return new UserDTO(user.getIdOrganizator(),id, pass);
     }
 
     public static Inscriere getFromDTO(InscriereDTO mdto){
@@ -25,11 +25,11 @@ public class DTOUtils {
 
     }
 
-    public static InscriereDTO getDTO(Inscriere inscriere){
+    public static InscriereDTO getDTO(Inscriere inscriere,String nume, int varsta){
         int inscriereId=inscriere.getIdInscriere();
         int participantId = inscriere.getIdParticipant();
         int probaId = inscriere.getIdProba();
-        return new InscriereDTO(inscriereId, participantId, probaId);
+        return new InscriereDTO(inscriereId, participantId, probaId, nume, varsta);
     }
 
 //    public static UserDTO[] getDTO(User[] users){

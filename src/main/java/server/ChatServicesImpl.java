@@ -9,6 +9,7 @@ import model.Proba;
 import repository.IRepository;
 import service.IObserver;
 import service.IServices;
+import service.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,69 +36,71 @@ public class ChatServicesImpl implements IServices {
     }
 
 
-//    public synchronized void login(Organizator user, IObserver client) throws Exception {
-//        Organizator userR=organizatorRepository.findOne(user.getIdOrganizator());
-//        loggedClients.put(user.getIdOrganizator(),client);
-////        if (userR!=null){
-////            if(loggedClients.get(user.getId())!=null)
-////                throw new ChatException("User already logged in.");
-////            loggedClients.put(user.getId(), client);
-////            notifyFriendsLoggedIn(user);
-////        }else
-////            throw new ChatException("Authentication failed.");
-//    }
-
-
-
-
-//    public synchronized void sendMessage(Inscriere inscriere) throws Exception {
-//        IObserver receiverClient=loggedClients.get(id_receiver);
-//        if (receiverClient!=null) {      //the receiver is logged in
-//            messageRepository.save(message);
-//            receiverClient.messageReceived(message);
-//        }
-//        else
-//            throw new ChatException("User "+id_receiver+" not logged in.");
-//    }
-//
-//    public synchronized void logout(User user, IChatObserver client) throws ChatException {
-//        IChatObserver localClient=loggedClients.remove(user.getId());
-//        if (localClient==null)
-//            throw new ChatException("User "+user.getId()+" is not logged in.");
-//        notifyFriendsLoggedOut(user);
-//    }
-
     private final int defaultThreadsNo=10;
     @Override
-    public void addInscriere(Inscriere inscriere) throws Exception {
+    public void addInscriere (Service service,String nume, int varsta, int idProba) throws Exception {
         System.out.println("PAS 4");
         System.out.println("NR CLIENTI LOGATI "+loggedClients.entrySet().size());
-        ExecutorService executor= Executors.newFixedThreadPool(defaultThreadsNo);
-        for (Map.Entry<Integer, IObserver> entry : loggedClients.entrySet()) {
-            System.out.println(entry.getKey() + "/" + entry.getValue());
-            IObserver chatClient=loggedClients.get(entry.getKey());
-            if (chatClient!=null)
-                executor.execute(() -> {
-                    try {
-                        chatClient.participantInscris(inscriere);
-//                        chatClient.refresh();
-                    } catch (Exception e) {
-                        System.err.println("Error notifying friend " + e);
-                    }
-                });
+//        service.addInscriere(participantRepository.findOne(inscriere.getIdParticipant()).getNume(),participantRepository.findOne(inscriere.getIdParticipant()).getVarsta(),inscriere.getIdProba());
+        System.out.println(nume+varsta+idProba);
+        if(findParticipant(nume, varsta) == null){
+            try {
+                Participant p = new Participant(participantRepository.size()+1, nume, varsta);
+                participantRepository.save(p);
+            }
+            catch (Exception except){
+            }
         }
+//        Participant participant = null;
+//        for (Participant p :
+//                participantRepository.findAll()) {
+//            if (p.getVarsta()==varsta && p.getNume().equals(nume))
+//                participant = p;
+//        }
+        int idParticipant = service.findParticipant(nume,varsta).getIdParticipant();
+        Inscriere inscriere = new Inscriere(inscriereRepository.size()+1, idParticipant,idProba);
+        if(findInscriere(idParticipant,idProba)==null) {
+            inscriereRepository.save(inscriere);
+            for (Proba proba :
+                    probaRepository.findAll()) {
+                if (proba.getIdProba() == idProba) {
+                    probaRepository.update(idProba, new Proba(idProba, proba.getLungime(), proba.getStil(), proba.getNrParticipanti() + 1));
+                }
+            }
+            ExecutorService executor = Executors.newFixedThreadPool(defaultThreadsNo);
+            for (Map.Entry<Integer, IObserver> entry : loggedClients.entrySet()) {
+                System.out.println(entry.getKey() + "/" + entry.getValue());
+                IObserver chatClient = loggedClients.get(entry.getKey());
+                if (chatClient != null)
+                    executor.execute(() -> {
+                        try {
+                            chatClient.participantInscris(service, nume, varsta, idProba);
+                        } catch (Exception e) {
+                            System.err.println("Error notifying friend " + e);
+                        }
+                    });
+            }
+        }
+    }
+
+    private Participant findParticipant(String nume, int varsta) {
+        for (Participant participant:
+             participantRepository.findAll()) {
+            if(participant.getNume().equals(nume) && participant.getVarsta()==varsta)
+                return participant;
+        }
+        return null;
+    }
+    private Inscriere findInscriere(int idParticipant, int idProba){
+        for (Inscriere inscriere: inscriereRepository.findAll()) {
+            if(inscriere.getIdParticipant() == idParticipant && inscriere.getIdProba() == idProba)
+                return inscriere;
+        }
+        return null;
     }
 
     @Override
     public void login(Organizator user,IObserver client) {
-//        Organizator userR=organizatorRepository.findOne(user.getIdOrganizator());
-//        loggedClients.put(user.getIdOrganizator(),client);
-//        if (userR!=null){
-//            if(loggedClients.get(user.getId())!=null)
-//                throw new ChatException("User already logged in.");
-//            notifyFriendsLoggedIn(user);
-//        }else
-//            throw new ChatException("Authentication failed.");
         int id=0;
         for (Organizator o:
              organizatorRepository.findAll()) {

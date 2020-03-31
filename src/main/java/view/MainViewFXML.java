@@ -59,39 +59,12 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
             allInstances.add(this);
 
     }
-    public static synchronized Vector getAllInstances()
-    {
-        return (Vector) (allInstances.clone());
-    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-//        alg.setItems(FXCollections.observableArrayList(SortingAlgorithm.values()));
-//        alg.getSelectionModel().selectFirst();
-//        asc.setSelected(true);
-//        asc.setUserData(SortingOrder.Ascending);
-//        desc.setUserData(SortingOrder.Descending);
-//        table.getSelectionModel().selectedItemProperty().addListener(
-//                (observable,oldvalue,newValue)->showSortingTaskDetails(newValue) );
-//        execMessages.setEditable(false);
-//        exeTask.setDisable(true);
-//        cancelExec.setDisable(true);
-//        progress.indeterminateProperty().not();
 
-//        initData();
         list.getSelectionModel().selectedItemProperty().addListener(
                 (observable,oldvalue,newValue)->showInscrisi(newValue) );
-//        listprobe=new JList(ctrl.getProbeListModel());
-//        listprobe.addListSelectionListener(new ListSelectionListener() {
-//
-//            @Override
-//            public void valueChanged(ListSelectionEvent listSelectionEvent) {
-//                listprobe=new JList(ctrl.getProbeListModel());
-//
-//                initData();
-//            }
-//        });
-
     }
 
     private void showInscrisi(Proba proba) {
@@ -154,13 +127,14 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
     public void handleAddButton(ActionEvent actionEvent) throws Exception {
         String nume = textfieldNume.getText();
         int varsta = Integer.parseInt(textFieldVarsta.getText());
-        service.addParticipant(nume,varsta);
+//        service.addParticipant(nume,varsta);
         ObservableList indexes = listInscriere.getSelectionModel().getSelectedIndices();
         for (Object index:indexes
              ) {
-            service.addInscriere(nume,varsta,(int)index+1);
+//            service.addInscriere(nume,varsta,(int)index+1);
 //            wait(5);
-            ctrl.participantInscris(service.findInscriere(service.findParticipant(nume,varsta).getIdParticipant(),(int) index + 1));
+//            ctrl.participantInscris(service,service.findInscriere(service.findParticipant(nume,varsta).getIdParticipant(),(int) index + 1));
+            ctrl.participantInscris(service,nume,varsta,(int) index + 1);
         }
         clearFields();
     }
@@ -211,9 +185,14 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
 //        initData();
     }
 
+//    @Override
+//    public void participantInscris(Inscriere inscriere) throws Exception {
+////        initData();
+//    }
+
     @Override
-    public void participantInscris(Inscriere inscriere) throws Exception {
-//        initData();
+    public void participantInscris(Service service,String nume, int varsta, int idProba) throws Exception {
+
     }
 
     @Override
@@ -227,18 +206,26 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
     }
 
     @Override
-    public void refresh(Inscriere inscriere)
-    {
+    public void refresh(Inscriere inscriere) {
         Platform.runLater(new Runnable() {
             public void run() {
 //                for(Proba proba : service.findAllProba()){
 //                    list.getItems().add(proba);
 //                }
 //                list.getItems().remove(inscriere.getIdProba()-1);
+//                try {
+//                    Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+
                 Proba p =service.findProba(inscriere.getIdProba());
+                System.out.println(p);
                 list.getItems().remove(p.getIdProba()-1);
                 list.getItems().add(p.getIdProba()-1,p);
+
             }
+
         });
     }
 

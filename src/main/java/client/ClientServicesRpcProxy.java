@@ -5,6 +5,7 @@ import model.Inscriere;
 import model.Organizator;
 import service.IObserver;
 import service.IServices;
+import service.Service;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -67,10 +68,11 @@ public class ClientServicesRpcProxy implements IServices {
     }
 
     @Override
-    public void addInscriere(Inscriere inscriere) throws Exception {
+    public void addInscriere(Service service, String nume, int varsta , int idProba) throws Exception {
 //        initializeConnection();
         System.out.println(" PAS 2");
-        InscriereDTO inscriereDTO = DTOUtils.getDTO(inscriere);
+        Inscriere i = new Inscriere(service.findNextIdInscriere(),0,idProba);
+        InscriereDTO inscriereDTO = DTOUtils.getDTO(i,nume,varsta);
         Request req=new Request.Builder().type(RequestType.ADD_PARTICIPANT).data(inscriereDTO).build();
         sendRequest(req);
         Response response=readResponse();
