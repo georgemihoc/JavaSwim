@@ -1,2 +1,12 @@
 rootProject.name = 'JavaSwim'
+include 'ChatClient'
+include 'ChatModel'
+include 'ChatNetworking'
+include 'Persistance'
+include 'SwimClient'
+include 'SwimModel'
+include 'SwimNetworking'
+include 'SwimPersistance'
+include 'SwimServer'
+include 'SwimServices'
 
