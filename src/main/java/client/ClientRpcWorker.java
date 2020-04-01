@@ -120,11 +120,6 @@ public class ClientRpcWorker implements Runnable, IObserver {
     }
 
     @Override
-    public void addParticipant(Inscriere inscriere) throws Exception {
-
-    }
-
-    @Override
     public void loggedIn(Organizator user) {
         UserDTO udto= DTOUtils.getDTO(user);
         Response resp=new Response.Builder().type(ResponseType.LOGGED_IN).data(udto).build();

@@ -3,24 +3,18 @@ package view;
 
 import model.Inscriere;
 import model.Organizator;
-import model.Proba;
 import service.IObserver;
 import service.IServices;
 import service.Service;
 
-import javax.swing.*;
-import java.util.Map;
 
 
 public class ClientController implements IObserver {
 
     private UserListModel userListModel;
-//    private MessagesListModel messagesModel;
 
     private IServices server;
-//    private ProbeListModel probeListModel;
     private Service service;
-//    private User user;
     private MainViewFXML mainViewFXML;
 
     public ClientController(IServices server, Service service, MainViewFXML view) {
@@ -35,10 +29,6 @@ public class ClientController implements IObserver {
         System.out.println("PAS 1");
         server.addInscriere(service,nume,varsta,idProba);
 
-    }
-
-    @Override
-    public void addParticipant(Inscriere inscriere) throws Exception {
     }
 
     @Override

@@ -11,21 +11,15 @@ import model.Inscriere;
 import model.Organizator;
 import model.Participant;
 import model.Proba;
-import service.Event;
 import service.IObserver;
-import service.Observer;
 import service.Service;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Vector;
 
 
-public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
+public class MainViewFXML implements Initializable, IObserver {
     private ClientController ctrl;
 
     public ListView listInscriere;
@@ -37,20 +31,9 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
     public TextField textfieldUsername;
     public PasswordField passwordField;
     @FXML
-    private TableView <Participant> table;
-
-    @FXML
     private ListView<Proba> list;
 
-    @FXML private RadioButton asc, desc;
 
-//    @FXML private ChoiceBox<SortingAlgorithm> alg;
-    @FXML private ToggleGroup orderGroup;
-
-    @FXML private TextField taskIdText,descBox, nrElem;
-    @FXML private TextArea execMessages;
-
-    private JList listprobe;
 
     private static Vector allInstances = new Vector();
 
@@ -92,8 +75,6 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
         this.service=service;
         this.ctrl = ctrl;
 
-        service.addObserver(this);
-//        service.addRunnerObserver(new RunnerObserver());
         initData();
         mainPane.setVisible(false);
     }
@@ -181,22 +162,7 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
     }
 
     @Override
-    public void update(Event event) {
-//        initData();
-    }
-
-//    @Override
-//    public void participantInscris(Inscriere inscriere) throws Exception {
-////        initData();
-//    }
-
-    @Override
     public void participantInscris(Service service,String nume, int varsta, int idProba) throws Exception {
-
-    }
-
-    @Override
-    public void addParticipant(Inscriere inscriere) throws Exception {
 
     }
 
@@ -227,14 +193,6 @@ public class MainViewFXML implements Initializable, Observer<Event>, IObserver {
             }
 
         });
-    }
-
-    private class RunnerObserver implements Observer<Event> {
-        @Override
-        public void update(Event event) {
-            initData();
-        }
-
     }
 
 }

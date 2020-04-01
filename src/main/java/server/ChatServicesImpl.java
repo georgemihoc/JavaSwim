@@ -111,8 +111,4 @@ public class ChatServicesImpl implements IServices {
         System.out.println("S-a LOGAT" + client);
 
     }
-
-    public synchronized Map<Integer, IObserver> getLoggedUsers() {
-        return loggedClients;
-    }
 }

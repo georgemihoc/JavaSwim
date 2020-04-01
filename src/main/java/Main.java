@@ -13,7 +13,6 @@ import service.Service;
 import view.ClientController;
 import view.MainViewFXML;
 
-import java.util.Iterator;
 
 public class Main extends Application {
     @Override
@@ -26,16 +25,12 @@ public class Main extends Application {
         ClientController clientController = StartRpcClient.main(getParticipantService(),ctrl);
         System.out.println("BOss");
 
-//        Iterator list = MainViewFXML.getAllInstances().iterator();
-//        while (list.hasNext()){
-//            System.out.println(list.toString());
-//        }
 
 
         ctrl.setTasksService(getParticipantService(),clientController);
-//        ctrl.setTasksService(getParticipantService());
         Scene myScene = new Scene(myPane);
         primaryStage.setScene(myScene);
+        primaryStage.setAlwaysOnTop(true);
 
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -46,17 +41,12 @@ public class Main extends Application {
         primaryStage.show();
     }
     public static void main(String[] args) throws Exception {
-//        StartRpcClient.main();
         System.out.println("boss");
         launch(args);
     }
 
     static Service getParticipantService(){
         ApplicationContext context=new ClassPathXmlApplicationContext("SwimApp.xml");
-
-//        ParticipantDbRepository repoParticipant = context.getBean(ParticipantDbRepository.class);
-//        ProbaDbRepository repoProba = context.getBean(ProbaDbRepository.class);
-//        InscriereDbRepository repoInscriere = context.getBean(InscriereDbRepository.class);
 
         return context.getBean(Service.class);
     }

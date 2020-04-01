@@ -7,8 +7,6 @@ import view.ClientController;
 import view.MainViewFXML;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
 import java.util.Properties;
 
 
@@ -36,57 +34,12 @@ public class StartRpcClient {
         System.out.println("Using server IP "+serverIP);
         System.out.println("Using server port "+serverPort);
 
-//        try {
-//            InetAddress addr;
-//            Socket sock = new Socket("localhost", 55556);
-//            addr = sock.getInetAddress();
-//            System.out.println("Connected to " + addr);
-////            launch(args);
-////            Main.run();
-//            sock.close();
-//        } catch (java.io.IOException e) {
-//            System.out.println("Can't connect to server");
-//            System.out.println(e);
-//        }
+
         IServices server=new ClientServicesRpcProxy(serverIP, serverPort);
 
         ClientController ctrl=new ClientController(server,service,view);
 
         return ctrl;
-//
-//
-
 
     }
-
-//    @Override
-//    public void start(Stage primaryStage) throws Exception {
-//        primaryStage.setTitle("Concurs de inot");
-//        FXMLLoader loader=new FXMLLoader(getClass().getResource("mainView.fxml"));
-//        Pane myPane = (AnchorPane) loader.load();
-//        MainViewFXML ctrl=loader.getController();
-//
-//
-//
-//        ctrl.setTasksService(getParticipantService());
-//        Scene myScene = new Scene(myPane);
-//        primaryStage.setScene(myScene);
-//
-//
-//        primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
-//            public void handle(WindowEvent we) {
-////                ctrl.close();
-//            }
-//        });
-//        primaryStage.show();
-//    }
-//    static Service getParticipantService(){
-//        ApplicationContext context=new ClassPathXmlApplicationContext("SwimApp.xml");
-//
-////        ParticipantDbRepository repoParticipant = context.getBean(ParticipantDbRepository.class);
-////        ProbaDbRepository repoProba = context.getBean(ProbaDbRepository.class);
-////        InscriereDbRepository repoInscriere = context.getBean(InscriereDbRepository.class);
-//
-//        return context.getBean(Service.class);
-//    }
 }

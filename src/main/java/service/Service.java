@@ -9,7 +9,7 @@ import repository.IRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Service  implements Observable<Event>{
+public class Service {
     private IRepository<Integer, Participant> repoParticipant;
     private IRepository<Integer, Proba> repoProba;
     private IRepository<Integer, Inscriere> repoInscriere;
@@ -42,21 +42,6 @@ public class Service  implements Observable<Event>{
             return null;
         }
     }
-    private List<Observer<Event>> observers=new ArrayList<>();
-    @Override
-    public void addObserver(Observer<Event> e) {
-        observers.add(e);
-    }
-
-    @Override
-    public void removeObserver(Observer<Event> e) {
-        observers.remove(e);
-    }
-
-    @Override
-    public void notifyObservers(Event t) {
-        observers.stream().forEach(x->x.update(t));
-    }
 
     public Participant findParticipant(String nume, int varsta){
         for (Participant p:
@@ -87,7 +72,6 @@ public class Service  implements Observable<Event>{
                 repoProba.update(idProba,new Proba(idProba,proba.getLungime(),proba.getStil(),proba.getNrParticipanti()+1));
             }
         }
-        notifyObservers(null);
         return inscriere;
     }
 //    public Inscriere addInscriere(Inscriere inscriere){

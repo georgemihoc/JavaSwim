@@ -53,19 +53,6 @@ public class ClientServicesRpcProxy implements IServices {
         }
     }
 
-    @Override
-    public Map<Integer, IObserver> getLoggedUsers() throws Exception {
-//        UserDTO udto= DTOUtils.getDTO(user);
-        Request req=new Request.Builder().type(RequestType.GET_LOGGED_USERS).build();
-        sendRequest(req);
-        Response response=readResponse();
-        if (response.type()== ResponseType.ERROR){
-            String err=response.data().toString();
-            throw new Exception(err);
-        }
-
-        return (Map<Integer, IObserver>) response.data();
-    }
 
     @Override
     public void addInscriere(Service service, String nume, int varsta , int idProba) throws Exception {
