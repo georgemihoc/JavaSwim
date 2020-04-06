@@ -5,10 +5,10 @@ import model.Proba;
 
 import services.IObserver;
 import services.IServices;
-import services.Service;
 import repository.*;
+import services.SwimException;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -35,7 +35,7 @@ public class ChatServicesImpl implements IServices {
 
     private final int defaultThreadsNo=10;
     @Override
-    public void addInscriere (Service service, String nume, int varsta, int idProba) throws Exception {
+    public void addInscriere (String nume, int varsta, int idProba) throws Exception {
         System.out.println("PAS 4");
         System.out.println("NR CLIENTI LOGATI "+loggedClients.entrySet().size());
 //        service.addInscriere(participantRepository.findOne(inscriere.getIdParticipant()).getNume(),participantRepository.findOne(inscriere.getIdParticipant()).getVarsta(),inscriere.getIdProba());
@@ -48,13 +48,7 @@ public class ChatServicesImpl implements IServices {
             catch (Exception except){
             }
         }
-//        model.Participant participant = null;
-//        for (model.Participant p :
-//                participantRepository.findAll()) {
-//            if (p.getVarsta()==varsta && p.getNume().equals(nume))
-//                participant = p;
-//        }
-        int idParticipant = service.findParticipant(nume,varsta).getIdParticipant();
+        int idParticipant = findParticipant(nume,varsta).getIdParticipant();
         Inscriere inscriere = new Inscriere(inscriereRepository.size()+1, idParticipant,idProba);
         if(findInscriere(idParticipant,idProba)==null) {
             inscriereRepository.save(inscriere);
@@ -71,7 +65,8 @@ public class ChatServicesImpl implements IServices {
                 if (chatClient != null)
                     executor.execute(() -> {
                         try {
-                            chatClient.participantInscris(service, nume, varsta, idProba);
+                            //chatClient.participantInscris(nume, varsta, idProba);
+                            chatClient.inscriereEfectuata(inscriere);
                         } catch (Exception e) {
                             System.err.println("Error notifying friend " + e);
                         }
@@ -97,15 +92,57 @@ public class ChatServicesImpl implements IServices {
     }
 
     @Override
-    public void login(Organizator user,IObserver client) {
-        int id=0;
+    public void login(Organizator user,IObserver client) throws SwimException {
+        int id=-1;
+
         for (Organizator o:
              organizatorRepository.findAll()) {
             if(o.getPassword().equals(user.getPassword()) && o.getUsername().equals(user.getUsername()))
                 id= o.getIdOrganizator();
         }
-        loggedClients.put(id, client);
-        System.out.println("S-a LOGAT" + client);
+        if(id == -1){
+            throw new SwimException("Invalid Credentials");
+        }
+        else {
+            Organizator userOk = organizatorRepository.findOne(id);
+            if(userOk != null){
+                if(loggedClients.containsKey(id))
+                    throw  new SwimException("User already logged in");
+                loggedClients.put(id, client);
+                System.out.println("S-a LOGAT" + client);
+            }
 
+        }
+    }
+    public synchronized Proba[] getProbe() throws Exception {
+        List<Proba> list = new ArrayList<>();
+        for (Proba proba :
+                probaRepository.findAll()) {
+            list.add(proba);
+        }
+        System.out.println("Size "+list.size());
+        return list.toArray(new Proba[list.size()]);
+    }
+
+    @Override
+    public Participant[] getParticipanti() throws Exception {
+        List<Participant> list = new ArrayList<>();
+        for (Participant participant :
+                participantRepository.findAll()) {
+            list.add(participant);
+        }
+        System.out.println("Size "+list.size());
+        return list.toArray(new Participant[list.size()]);
+    }
+
+    @Override
+    public Inscriere[] getInscrieri() throws Exception {
+        List<Inscriere> list = new ArrayList<>();
+        for (Inscriere inscriere :
+                inscriereRepository.findAll()) {
+            list.add(inscriere);
+        }
+        System.out.println("Size "+list.size());
+        return list.toArray(new Inscriere[list.size()]);
     }
 }

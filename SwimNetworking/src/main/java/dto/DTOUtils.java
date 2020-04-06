@@ -3,6 +3,8 @@ package dto;
 
 import model.Inscriere;
 import model.Organizator;
+import model.Participant;
+import model.Proba;
 
 public class DTOUtils {
     public static Organizator getFromDTO(UserDTO usdto){
@@ -45,5 +47,64 @@ public class DTOUtils {
             loggedUsers[i]=getFromDTO(users[i]);
         }
         return loggedUsers;
+    }
+    public static Proba getFromDTO(ProbaDTO usdto){
+        return new Proba(usdto.getIdProba(),usdto.getLungime(),usdto.getStil(),usdto.getNrParticipanti());
+    }
+    public static Proba[] getFromDTO(ProbaDTO[] probe){
+        Proba[] friends = new Proba[probe.length];
+        for(int i = 0;i< probe.length; i++){
+            friends[i] = getFromDTO(probe[i]);
+        }
+        return friends;
+    }
+    public static ProbaDTO getDTO(Proba user){
+//        String id=user.getId();
+//        String pass=user.getPasswd();
+        return new ProbaDTO(user.getIdProba(),user.getLungime(),user.getStil(),user.getNrParticipanti());
+    }
+    public static ProbaDTO[] getDTO(Proba[] users){
+        ProbaDTO[] frDTO=new ProbaDTO[users.length];
+        for(int i=0;i<users.length;i++)
+            frDTO[i]=getDTO(users[i]);
+        return frDTO;
+    }
+    ////PARTICIPANT
+    public static Participant getFromDTO(ParticipantDTO usdto){
+        return new Participant(usdto.idParticipant,usdto.nume,usdto.varsta);
+    }
+    public static Participant[] getFromDTO(ParticipantDTO[] probe){
+        Participant[] friends = new Participant[probe.length];
+        for(int i = 0;i< probe.length; i++){
+            friends[i] = getFromDTO(probe[i]);
+        }
+        return friends;
+    }
+    public static ParticipantDTO getDTO(Participant user){
+        return new ParticipantDTO(user.getIdParticipant(),user.getNume(),user.getVarsta());
+    }
+    public static ParticipantDTO[] getDTO(Participant[] users){
+        ParticipantDTO[] frDTO=new ParticipantDTO[users.length];
+        for(int i=0;i<users.length;i++)
+            frDTO[i]=getDTO(users[i]);
+        return frDTO;
+    }
+
+    ///INSCRIERE
+    public static Inscriere[] getFromDTO(InscriereDTO[] probe){
+        Inscriere[] friends = new Inscriere[probe.length];
+        for(int i = 0;i< probe.length; i++){
+            friends[i] = getFromDTO(probe[i]);
+        }
+        return friends;
+    }
+    public static InscriereDTO getDTO(Inscriere user){
+        return new InscriereDTO(user.getIdInscriere(),user.getIdParticipant(),user.getIdProba(),"null",0);
+    }
+    public static InscriereDTO[] getDTO(Inscriere[] users){
+        InscriereDTO[] frDTO=new InscriereDTO[users.length];
+        for(int i=0;i<users.length;i++)
+            frDTO[i]=getDTO(users[i]);
+        return frDTO;
     }
 }

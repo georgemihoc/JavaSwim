@@ -6,15 +6,18 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
+import javafx.stage.Stage;
+import javafx.stage.Window;
 import model.*;
 import services.*;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Vector;
 
 
-public class MainViewFXML implements Initializable, IObserver {
+public class MainViewFXML extends Window implements Initializable, IObserver {
     private ClientController ctrl;
 
     public ListView listInscriere;
@@ -27,14 +30,12 @@ public class MainViewFXML implements Initializable, IObserver {
     public PasswordField passwordField;
     @FXML
     private ListView<Proba> list;
-
-
-
-    private static Vector allInstances = new Vector();
+    private List<Proba> listaProbe;
+    private List<Inscriere> listaInscrieri;
+    private List<Participant> listaParticipanti;
 
 
     public MainViewFXML() {
-            allInstances.add(this);
 
     }
 
@@ -42,19 +43,53 @@ public class MainViewFXML implements Initializable, IObserver {
     public void initialize(URL location, ResourceBundle resources) {
 
         list.getSelectionModel().selectedItemProperty().addListener(
-                (observable,oldvalue,newValue)->showInscrisi(newValue) );
+                (observable,oldvalue,newValue)-> showInscrisi(newValue));
     }
+    public Iterable<Participant> findAllInscrisi(int idProba){
+        List<Participant> list = new ArrayList<>();
+        for (Inscriere inscriere:
+                listaInscrieri) {
+            if( inscriere.getIdProba() == idProba) {
+                for (Participant participant :
+                        listaParticipanti) {
+                    if (inscriere.getIdParticipant() == participant.getIdParticipant())
+                        list.add(participant);
+                }
+            }
+        }
+        return list;
+    }
+    public Iterable<Proba> findAllProbeInscris(int idParticipant){
+        List<Proba> list = new ArrayList<>();
+        for (Inscriere inscriere:
+                listaInscrieri) {
+            if(inscriere.getIdParticipant() == idParticipant)
+                for (Proba proba :
+                        listaProbe) {
+                    if(inscriere.getIdProba() == proba.getIdProba())
+                        list.add(proba);
 
-    private void showInscrisi(Proba proba) {
+                }
+        }
+        return list;
+    }
+    private void showInscrisi(Proba proba)  {
         if (proba==null)
             clearFields();
         else{
             listInscrisi.getItems().clear();
+            System.out.println("INSCRIERI:"+listaInscrieri.size());
+            System.out.println("PARTICIPANTI"+listaParticipanti.size());
+            try {
+                listaParticipanti = ctrl.getParticipanti();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             for (Participant participant:
-                 service.findAllInscrisi(proba.getIdProba())) {
+                 findAllInscrisi(proba.getIdProba())) {
                 String lista = "";
                 for (Proba p:
-                        service.findAllProbeInscris(participant.getIdParticipant())) {
+                        findAllProbeInscris(participant.getIdParticipant())) {
                         if(lista!= "")
                             lista+= ", ";
                         lista += p.getLungime()+ "m "+ p.getStil()+ " ";
@@ -65,12 +100,8 @@ public class MainViewFXML implements Initializable, IObserver {
 
         }
     }
-    private Service service;
-    public void setTasksService(Service service , ClientController ctrl){
-        this.service=service;
+    public void setTasksService(ClientController ctrl) throws Exception {
         this.ctrl = ctrl;
-
-        initData();
         mainPane.setVisible(false);
     }
 
@@ -80,37 +111,24 @@ public class MainViewFXML implements Initializable, IObserver {
         listInscriere.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         listInscrisi.getItems().clear();
 
-//        list.getItems().setAll()
-        for(Proba proba : service.findAllProba()){
+        for(Proba proba : listaProbe){
             list.getItems().add(proba);
             listInscriere.getItems().add(proba.getLungime()+"m " + proba.getStil());
         }
-//        for(model.Proba proba: ctrl.getProbeListModel()){
-//            list.getItems().add(proba);
-//        }
-//        list.getItems().setAll(ctrl.getProbeListModel());
 
         System.out.println(listInscriere.getSelectionModel().getSelectedItems());
 
 
-//        table.getItems().clear();
-//        for (model.Participant participant:service.findAllParticipant()) {
-//            table.getItems().add(participant);
-//        }
     }
 
 
     public void handleAddButton(ActionEvent actionEvent) throws Exception {
         String nume = textfieldNume.getText();
         int varsta = Integer.parseInt(textFieldVarsta.getText());
-//        service.addParticipant(nume,varsta);
         ObservableList indexes = listInscriere.getSelectionModel().getSelectedIndices();
         for (Object index:indexes
              ) {
-//            service.addInscriere(nume,varsta,(int)index+1);
-//            wait(5);
-//            ctrl.participantInscris(service,service.findInscriere(service.findParticipant(nume,varsta).getIdParticipant(),(int) index + 1));
-            ctrl.participantInscris(service,nume,varsta,(int) index + 1);
+            ctrl.participantInscris(nume,varsta,(int) index + 1);
         }
         clearFields();
     }
@@ -126,15 +144,20 @@ public class MainViewFXML implements Initializable, IObserver {
     public void handleLoginButton(ActionEvent actionEvent) throws Exception {
         String username = textfieldUsername.getText();
         String password = passwordField.getText();
-        if( service.validateLogin(username,password))
-        {
+        try {
+            ctrl.login(username, password);
             textfieldUsername.clear();
             passwordField.clear();
             loginPane.setVisible(false);
             mainPane.setVisible(true);
-            ctrl.login(username,password);
+
+            listaProbe = ctrl.getProbe();
+            initData();
+            listaParticipanti = ctrl.getParticipanti();
+            listaInscrieri = ctrl.getInscrieri();
+
         }
-        else {
+        catch (Exception exception){
             showErrorMessage("Invalid credentials");
         }
     }
@@ -154,10 +177,12 @@ public class MainViewFXML implements Initializable, IObserver {
         message.setTitle("Mesaj eroare");
         message.setContentText(text);
         message.showAndWait();
+        Stage stage = (Stage) message.getDialogPane().getScene().getWindow();
+        message.initOwner(stage);
     }
 
     @Override
-    public void participantInscris(Service service,String nume, int varsta, int idProba) throws Exception {
+    public void participantInscris(String nume, int varsta, int idProba) throws Exception {
 
     }
 
@@ -170,24 +195,25 @@ public class MainViewFXML implements Initializable, IObserver {
     public void refresh(Inscriere inscriere) {
         Platform.runLater(new Runnable() {
             public void run() {
-//                for(model.Proba proba : service.findAllProba()){
-//                    list.getItems().add(proba);
-//                }
-//                list.getItems().remove(inscriere.getIdProba()-1);
-//                try {
-//                    Thread.sleep(1000);
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
+                Proba p = null;
 
-                Proba p =service.findProba(inscriere.getIdProba());
+                for (Proba proba :
+                        listaProbe) {
+                    if(proba.getIdProba() == inscriere.getIdProba())
+                        p = proba;
+                }
+                p.setNrParticipanti(p.getNrParticipanti() + 1);
                 System.out.println(p);
                 list.getItems().remove(p.getIdProba()-1);
                 list.getItems().add(p.getIdProba()-1,p);
 
+                listaInscrieri.add(inscriere);
             }
-
         });
     }
 
+    @Override
+    public void inscriereEfectuata(Inscriere inscriere) throws Exception {
+
+    }
 }

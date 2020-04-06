@@ -6,10 +6,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import services.Service;
-
 
 public class Main extends Application {
     @Override
@@ -19,11 +15,11 @@ public class Main extends Application {
         Pane myPane = (AnchorPane) loader.load();
         MainViewFXML ctrl=loader.getController();
 
-        ClientController clientController = StartRpcClient.main(getParticipantService(),ctrl);
+        ClientController clientController = StartRpcClient.main(ctrl);
         System.out.println("BOss");
 
 
-        ctrl.setTasksService(getParticipantService(),clientController);
+        ctrl.setTasksService(clientController);
         Scene myScene = new Scene(myPane);
         primaryStage.setScene(myScene);
         primaryStage.setAlwaysOnTop(true);
@@ -31,7 +27,6 @@ public class Main extends Application {
 
         primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
-//                ctrl.close();
             }
         });
         primaryStage.show();
@@ -41,11 +36,6 @@ public class Main extends Application {
         launch(args);
     }
 
-    static Service getParticipantService(){
-        ApplicationContext context=new ClassPathXmlApplicationContext("SwimApp.xml");
-
-        return context.getBean(Service.class);
-    }
 
 //    public static void main(String[] args) {
 //        ApplicationContext context=new ClassPathXmlApplicationContext("SwimApp.xml");

@@ -87,8 +87,38 @@ public class ClientRpcWorker implements Runnable, IObserver {
                 System.out.println(connection);
 //                service.addDb(inscriere);
                 System.out.println(nume+varsta+inscriere.getIdProba());
-                server.addInscriere(service,nume,varsta,inscriere.getIdProba());
+                server.addInscriere(nume,varsta,inscriere.getIdProba());
                 return okResponse;
+            } catch (Exception e) {
+                return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
+            }
+        }
+        if(request.type() == RequestType.GET_PROBE){
+            System.out.println("GETPROBE REQUEST");
+            try {
+                Proba[] friends=server.getProbe();
+                ProbaDTO[] frDTO= DTOUtils.getDTO(friends);
+                return new Response.Builder().type(ResponseType.GET_PROBE_RESPONSE).data(frDTO).build();
+            } catch (Exception e) {
+                return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
+            }
+        }
+        if(request.type() == RequestType.GET_PARTICIPANTI){
+            System.out.println("GET PARTICIPANTI REQUEST");
+            try {
+                Participant[] friends=server.getParticipanti();
+                ParticipantDTO[] frDTO= DTOUtils.getDTO(friends);
+                return new Response.Builder().type(ResponseType.GET_PARTICIPANTI_RESPONSE).data(frDTO).build();
+            } catch (Exception e) {
+                return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
+            }
+        }
+        if(request.type() == RequestType.GET_INSCRIERI){
+            System.out.println("GET INSCRIERI REQUEST");
+            try {
+                Inscriere[] friends=server.getInscrieri();
+                InscriereDTO[] frDTO= DTOUtils.getDTO(friends);
+                return new Response.Builder().type(ResponseType.GET_INSCRIERI_RESPONSE).data(frDTO).build();
             } catch (Exception e) {
                 return new Response.Builder().type(ResponseType.ERROR).data(e.getMessage()).build();
             }
@@ -102,20 +132,21 @@ public class ClientRpcWorker implements Runnable, IObserver {
     }
 
     @Override
-    public void participantInscris(Service service,String nume, int varsta ,int idProba) throws Exception {
-        System.out.println("PAS 5");
-        System.out.println(this.service.findNextIdInscriere());
-        System.out.println(this.service.findParticipant(nume,varsta).getIdParticipant());
-        Inscriere i = new Inscriere(this.service.findNextIdInscriere(),this.service.findParticipant(nume,varsta).getIdParticipant(),idProba);
-        InscriereDTO mdto = DTOUtils.getDTO(i,nume,varsta);
-//        InscriereDTO mdto= DTOUtils.getDTO(inscriere);
-        Response resp=new Response.Builder().type(ResponseType.PARTICIPANT_ADAUGAT).data(mdto).build();
-        System.out.println("Message received  "+mdto);
-        try {
-            sendResponse(resp);
-        } catch (IOException e) {
-            throw new Exception("Sending error: "+e);
-        }
+    public void participantInscris(String nume, int varsta ,int idProba) throws Exception {
+//        System.out.println("PAS 5");
+////        System.out.println(this.service.findNextIdInscriere());
+////        System.out.println(this.service.findParticipant(nume,varsta).getIdParticipant());
+////        Inscriere i = new Inscriere(this.service.findNextIdInscriere(),this.service.findParticipant(nume,varsta).getIdParticipant(),idProba);
+//        Inscriere i = new Inscriere(0,0,idProba);
+//        InscriereDTO mdto = DTOUtils.getDTO(i,nume,varsta);
+////        InscriereDTO mdto= DTOUtils.getDTO(inscriere);
+//        Response resp=new Response.Builder().type(ResponseType.PARTICIPANT_ADAUGAT).data(mdto).build();
+//        System.out.println("Message received  "+mdto);
+//        try {
+//            sendResponse(resp);
+//        } catch (IOException e) {
+//            throw new Exception("Sending error: "+e);
+//        }
     }
 
     @Override
@@ -133,5 +164,22 @@ public class ClientRpcWorker implements Runnable, IObserver {
     @Override
     public void refresh(Inscriere inscriere) {
         System.out.println("MERGE AICI");
+    }
+
+    @Override
+    public void inscriereEfectuata(Inscriere inscriere) throws Exception {
+        System.out.println("PAS 5");
+//        System.out.println(this.service.findNextIdInscriere());
+//        System.out.println(this.service.findParticipant(nume,varsta).getIdParticipant());
+//        Inscriere i = new Inscriere(this.service.findNextIdInscriere(),this.service.findParticipant(nume,varsta).getIdParticipant(),idProba);
+        InscriereDTO mdto = DTOUtils.getDTO(inscriere);
+//        InscriereDTO mdto= DTOUtils.getDTO(inscriere);
+        Response resp=new Response.Builder().type(ResponseType.PARTICIPANT_ADAUGAT).data(mdto).build();
+        System.out.println("Message received  "+mdto);
+        try {
+            sendResponse(resp);
+        } catch (IOException e) {
+            throw new Exception("Sending error: "+e);
+        }
     }
 }

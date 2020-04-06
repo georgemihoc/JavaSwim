@@ -1,15 +1,14 @@
 package rpcprotocol;
 
 
-import dto.DTOUtils;
-import dto.InscriereDTO;
-import dto.UserDTO;
+import dto.*;
 import model.Inscriere;
 import model.Organizator;
 
+import model.Participant;
+import model.Proba;
 import services.IObserver;
 import services.IServices;
-import services.Service;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -56,12 +55,53 @@ public class ClientServicesRpcProxy implements IServices {
         }
     }
 
+    @Override
+    public Proba[] getProbe() throws Exception {
+        Request req = new Request.Builder().type(RequestType.GET_PROBE).build();
+        sendRequest(req);
+        Response response = readResponse();
+        if (response.type()== ResponseType.ERROR){
+            String err=response.data().toString();
+            throw new Exception(err);
+        }
+        ProbaDTO[] frDTO=(ProbaDTO[])response.data();
+        Proba[] friends= DTOUtils.getFromDTO(frDTO);
+        return friends;
+    }
 
     @Override
-    public void addInscriere(Service service, String nume, int varsta , int idProba) throws Exception {
+    public Participant[] getParticipanti() throws Exception {
+        Request req = new Request.Builder().type(RequestType.GET_PARTICIPANTI).build();
+        sendRequest(req);
+        Response response = readResponse();
+        if (response.type()== ResponseType.ERROR){
+            String err=response.data().toString();
+            throw new Exception(err);
+        }
+        ParticipantDTO[] frDTO=(ParticipantDTO[])response.data();
+        Participant[] friends= DTOUtils.getFromDTO(frDTO);
+        return friends;
+    }
+    @Override
+    public Inscriere[] getInscrieri() throws Exception {
+        Request req = new Request.Builder().type(RequestType.GET_INSCRIERI).build();
+        sendRequest(req);
+        Response response = readResponse();
+        if (response.type()== ResponseType.ERROR){
+            String err=response.data().toString();
+            throw new Exception(err);
+        }
+        InscriereDTO[] frDTO=(InscriereDTO[])response.data();
+        Inscriere[] friends= DTOUtils.getFromDTO(frDTO);
+        return friends;
+    }
+
+
+    @Override
+    public void addInscriere(String nume, int varsta , int idProba) throws Exception {
 //        initializeConnection();
         System.out.println(" PAS 2");
-        Inscriere i = new Inscriere(service.findNextIdInscriere(),0,idProba);
+        Inscriere i = new Inscriere(0,0,idProba);
         InscriereDTO inscriereDTO = DTOUtils.getDTO(i,nume,varsta);
         Request req=new Request.Builder().type(RequestType.ADD_PARTICIPANT).data(inscriereDTO).build();
         sendRequest(req);

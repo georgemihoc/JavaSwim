@@ -11,7 +11,7 @@ import java.util.Properties;
 public class StartRpcClient {
     private static int defaultChatPort=55556;
     private static String defaultServer="localhost";
-    public static ClientController main(Service service, MainViewFXML view) throws Exception {
+    public static ClientController main(MainViewFXML view) throws Exception {
         Properties clientProps=new Properties();
         try {
             clientProps.load(StartRpcClient.class.getResourceAsStream("/client.properties"));
@@ -35,7 +35,7 @@ public class StartRpcClient {
 
         IServices server=new ClientServicesRpcProxy(serverIP, serverPort);
 
-        ClientController ctrl=new ClientController(server,service,view);
+        ClientController ctrl=new ClientController(server,view);
 
         return ctrl;
 

@@ -1,6 +1,12 @@
 import model.Inscriere;
 import model.Organizator;
+import model.Participant;
+import model.Proba;
 import services.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class ClientController implements IObserver {
@@ -8,20 +14,18 @@ public class ClientController implements IObserver {
     private UserListModel userListModel;
 
     private IServices server;
-    private Service service;
     private MainViewFXML mainViewFXML;
 
-    public ClientController(IServices server, Service service, MainViewFXML view) {
+    public ClientController(IServices server,  MainViewFXML view) {
         userListModel=new UserListModel();
         this.server = server;
-        this.service = service;
         this.mainViewFXML = view;
     }
 
     @Override
-    public void participantInscris(Service service,String nume, int varsta, int idProba) throws Exception {
+    public void participantInscris(String nume, int varsta, int idProba) throws Exception {
         System.out.println("PAS 1");
-        server.addInscriere(service,nume,varsta,idProba);
+        server.addInscriere(nume,varsta,idProba);
 
     }
 
@@ -35,10 +39,24 @@ public class ClientController implements IObserver {
         mainViewFXML.refresh(inscriere);
     }
 
+    @Override
+    public void inscriereEfectuata(Inscriere inscriere) throws Exception {
+
+    }
+
     public void login(String username, String password) throws Exception {
         System.out.println("USER");
-        System.out.println(service.findOrganizator(username,password).getUsername());
-        server.login(service.findOrganizator(username,password),this);
-
+        //System.out.println(service.findOrganizator(username,password).getUsername());
+//        server.login(service.findOrganizator(username,password),this);
+        server.login(new Organizator(0,username,password),this);
+    }
+    public List<Proba> getProbe() throws Exception {
+        return new ArrayList<>(Arrays.asList(server.getProbe()));
+    }
+    public List<Participant> getParticipanti() throws Exception {
+        return new ArrayList<>(Arrays.asList(server.getParticipanti()));
+    }
+    public List<Inscriere> getInscrieri() throws Exception {
+        return new ArrayList<>(Arrays.asList(server.getInscrieri()));
     }
 }
