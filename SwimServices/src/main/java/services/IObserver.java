@@ -4,12 +4,15 @@ package services;
 import model.Inscriere;
 import model.Organizator;
 
-public interface IObserver {
-     void participantInscris(String nume, int varsta, int idProba) throws Exception;
+import java.rmi.Remote;
+import java.rmi.RemoteException;
 
-     void loggedIn(Organizator user);
+public interface IObserver extends Remote {
+     void participantInscris(String nume, int varsta, int idProba) throws Exception, RemoteException;
 
-     void refresh(Inscriere inscriere);
+     void loggedIn(Organizator user) throws RemoteException;
 
-     void inscriereEfectuata(Inscriere inscriere) throws Exception;
+     void refresh(Inscriere inscriere) throws RemoteException;
+
+     void inscriereEfectuata(Inscriere inscriere) throws Exception,RemoteException;
 }

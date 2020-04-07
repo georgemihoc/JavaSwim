@@ -1,6 +1,8 @@
 package model;
 
-public class Proba {
+import java.io.Serializable;
+
+public class Proba implements Serializable {
     int idProba;
     int lungime;
     String stil;

@@ -1,6 +1,8 @@
 package model;
 
-public class Inscriere {
+import java.io.Serializable;
+
+public class Inscriere implements Serializable {
     int idInscriere;
     int idParticipant;
     int  idProba;

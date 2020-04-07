@@ -1,6 +1,8 @@
 package model;
 
-public class Organizator {
+import java.io.Serializable;
+
+public class Organizator implements Serializable {
     int idOrganizator;
     String username;
     String password;

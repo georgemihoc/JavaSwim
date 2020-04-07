@@ -4,19 +4,22 @@ import model.Participant;
 import model.Proba;
 import services.*;
 
+import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 
-public class ClientController implements IObserver {
+public class ClientController  extends UnicastRemoteObject implements IObserver, Serializable {
 
     private UserListModel userListModel;
 
     private IServices server;
     private MainViewFXML mainViewFXML;
 
-    public ClientController(IServices server,  MainViewFXML view) {
+    public ClientController(IServices server,  MainViewFXML view) throws RemoteException {
         userListModel=new UserListModel();
         this.server = server;
         this.mainViewFXML = view;
@@ -41,6 +44,7 @@ public class ClientController implements IObserver {
 
     @Override
     public void inscriereEfectuata(Inscriere inscriere) throws Exception {
+        mainViewFXML.refresh(inscriere);
 
     }
 

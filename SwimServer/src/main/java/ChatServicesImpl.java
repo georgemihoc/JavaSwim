@@ -8,6 +8,7 @@ import services.IServices;
 import repository.*;
 import services.SwimException;
 
+import java.rmi.RemoteException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -67,8 +68,10 @@ public class ChatServicesImpl implements IServices {
                         try {
                             //chatClient.participantInscris(nume, varsta, idProba);
                             chatClient.inscriereEfectuata(inscriere);
-                        } catch (Exception e) {
+                        } catch (RemoteException e) {
                             System.err.println("Error notifying friend " + e);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
                     });
             }
