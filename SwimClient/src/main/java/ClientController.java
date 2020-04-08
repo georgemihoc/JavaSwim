@@ -18,6 +18,7 @@ public class ClientController  extends UnicastRemoteObject implements IObserver,
 
     private IServices server;
     private MainViewFXML mainViewFXML;
+    private Organizator user;
 
     public ClientController(IServices server,  MainViewFXML view) throws RemoteException {
         userListModel=new UserListModel();
@@ -52,7 +53,11 @@ public class ClientController  extends UnicastRemoteObject implements IObserver,
         System.out.println("USER");
         //System.out.println(service.findOrganizator(username,password).getUsername());
 //        server.login(service.findOrganizator(username,password),this);
+        user = new Organizator(0,username,password);
         server.login(new Organizator(0,username,password),this);
+    }
+    public void logout() throws Exception {
+        server.logout(user,this);
     }
     public List<Proba> getProbe() throws Exception {
         return new ArrayList<>(Arrays.asList(server.getProbe()));

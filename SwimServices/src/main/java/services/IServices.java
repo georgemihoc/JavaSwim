@@ -10,6 +10,8 @@ public interface IServices {
 
      void login(Organizator user, IObserver client) throws Exception;
 
+     void logout(Organizator user, IObserver client) throws Exception;
+
      Proba[] getProbe() throws Exception;
 
      Participant[] getParticipanti() throws Exception;

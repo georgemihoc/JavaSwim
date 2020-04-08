@@ -86,13 +86,13 @@ public class MainViewFXML extends Window implements Initializable, IObserver {
                 e.printStackTrace();
             }
             for (Participant participant:
-                 findAllInscrisi(proba.getIdProba())) {
+                    findAllInscrisi(proba.getIdProba())) {
                 String lista = "";
                 for (Proba p:
                         findAllProbeInscris(participant.getIdParticipant())) {
-                        if(lista!= "")
-                            lista+= ", ";
-                        lista += p.getLungime()+ "m "+ p.getStil()+ " ";
+                    if(lista!= "")
+                        lista+= ", ";
+                    lista += p.getLungime()+ "m "+ p.getStil()+ " ";
                 }
                 listInscrisi.getItems().add(participant.getNume() + " | " + participant.getVarsta()  + " | Probe: " + lista);
             }
@@ -127,7 +127,7 @@ public class MainViewFXML extends Window implements Initializable, IObserver {
         int varsta = Integer.parseInt(textFieldVarsta.getText());
         ObservableList indexes = listInscriere.getSelectionModel().getSelectedIndices();
         for (Object index:indexes
-             ) {
+        ) {
             ctrl.participantInscris(nume,varsta,(int) index + 1);
         }
         clearFields();
@@ -167,7 +167,8 @@ public class MainViewFXML extends Window implements Initializable, IObserver {
             handleLoginButton(null);
     }
 
-    public void handleLogout(ActionEvent actionEvent) {
+    public void handleLogout(ActionEvent actionEvent) throws Exception {
+        ctrl.logout();
         mainPane.setVisible(false);
         loginPane.setVisible(true);
     }

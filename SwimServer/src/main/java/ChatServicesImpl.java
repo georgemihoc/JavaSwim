@@ -117,6 +117,18 @@ public class ChatServicesImpl implements IServices {
 
         }
     }
+    public synchronized void logout(Organizator user,IObserver client) throws Exception {
+        int id = -1;
+        for (Organizator o:
+                organizatorRepository.findAll()) {
+            if(o.getPassword().equals(user.getPassword()) && o.getUsername().equals(user.getUsername()))
+                id= o.getIdOrganizator();
+        }
+        System.out.println("User " + id + "logged out");
+        IObserver localClient=loggedClients.remove(id);
+        if (localClient==null)
+            throw new Exception("User "+id+" is not logged in.");
+    }
     public synchronized Proba[] getProbe() throws Exception {
         List<Proba> list = new ArrayList<>();
         for (Proba proba :
