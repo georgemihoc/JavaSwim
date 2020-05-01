@@ -1,11 +1,18 @@
 package model;
 
+//import javax.persistence.Entity;
+//import javax.persistence.Table;
 import java.io.Serializable;
 
+//@Entity
+//@Table( name = "Participant" )
 public class Participant implements Serializable {
     int idParticipant;
     String nume;
     int varsta;
+
+    public Participant() {
+    }
 
     public Participant(int idParticipant, String nume, int varsta) {
         this.idParticipant = idParticipant;

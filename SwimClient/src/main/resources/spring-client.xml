@@ -5,7 +5,6 @@
 
     <bean id="swimService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
         <property name="serviceUrl" value="rmi://localhost:1099/Swim"/>
-        <!-- <property name="serviceUrl" value="rmi://localhost:1099/Chat"/>-->
         <property name="serviceInterface" value="services.IServices"/>
     </bean>
 
