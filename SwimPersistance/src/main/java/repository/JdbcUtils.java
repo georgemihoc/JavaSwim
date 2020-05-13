@@ -14,11 +14,25 @@ public class JdbcUtils {
     public JdbcUtils(Properties props){
         jdbcProps=props;
     }
+    public JdbcUtils() {
+        Properties serverProps = new Properties();
+        try {
+            serverProps.load(JdbcUtils.class.getResourceAsStream("/server.properties"));
+//            System.out.println("Server properties set. ");
+//            serverProps.list(System.out);
+            jdbcProps = serverProps;
+
+        } catch (Exception e) {
+            System.err.println("Cannot find chatserver.properties " + e);
+            return;
+        }
+    }
     private Connection instance=null;
     private Connection getNewConnection(){
         logger.traceEntry();
 //        String driver=jdbcProps.getProperty("swim.jdbc.driver");
-        String url=jdbcProps.getProperty("swim.jdbc.url");
+//        String url=jdbcProps.getProperty("swim.jdbc.url");
+        String url="jdbc:sqlite:db/swimDb";
         String user=jdbcProps.getProperty("tasks.jdbc.user");
         String pass=jdbcProps.getProperty("tasks.jdbc.pass");
         logger.info("trying to connect to database ... {}",url);

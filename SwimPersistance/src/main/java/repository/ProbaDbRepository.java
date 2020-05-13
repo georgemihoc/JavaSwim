@@ -3,13 +3,12 @@ package repository;
 import model.Proba;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.stereotype.Component;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
-
+@Component
 public class ProbaDbRepository implements IRepository<Integer, Proba> {
     private JdbcUtils dbUtils;
 
@@ -18,6 +17,10 @@ public class ProbaDbRepository implements IRepository<Integer, Proba> {
     public ProbaDbRepository(Properties props){
         logger.info("Initializing ProbaDbRepository with properties: {} ",props);
         dbUtils=new JdbcUtils(props);
+    }
+
+    public ProbaDbRepository() {
+        dbUtils=new JdbcUtils();
     }
 
     @Override
@@ -135,6 +138,7 @@ public class ProbaDbRepository implements IRepository<Integer, Proba> {
             System.out.println("Error DB "+e);
         }
         logger.traceExit(tasks);
+        tasks.sort(Comparator.comparingInt(Proba::getIdProba));
         return tasks;
     }
 

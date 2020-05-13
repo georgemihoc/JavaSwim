@@ -14,6 +14,9 @@ public class Proba implements Serializable {
         this.stil = stil;
         this.nrParticipanti = nrParticipanti;
     }
+    public Proba(){
+
+    }
 
     public int getIdProba() {
         return idProba;

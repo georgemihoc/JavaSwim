@@ -9,4 +9,4 @@ include 'SwimNetworking'
 include 'SwimPersistance'
 include 'SwimServer'
 include 'SwimServices'
-
+include 'SwimRestServices'
